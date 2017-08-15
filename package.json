@@ -1,0 +1,30 @@
+{
+  "name": "cjsx-converter",
+  "version": "0.1.0",
+  "description": "Convert Coffee/CJSX into pretty JS/JSX",
+  "main": "index.js",
+  "repository": "https://github.com/Gusto/cjsx-converter.git",
+  "author": "Rylan Collins <rylan@gusto.com>",
+  "license": "MIT",
+  "scripts": {
+    "test": "mocha test/**/*.spec.js",
+    "lint": "eslint --ext .jsx,.js ."
+  },
+  "dependencies": {
+    "cjsx-codemod": "^0.0.0",
+    "commander": "^2.10.0",
+    "decaffeinate": "^2.56.32",
+    "jscodeshift": "^0.3.32",
+    "prettier": "^1.5.3",
+    "react-codemod": "^4.0.0"
+  },
+  "devDependencies": {
+    "chai": "^4.1.1",
+    "eslint": "3.19.0",
+    "eslint-config-airbnb": "^15.1.0",
+    "eslint-plugin-import": "^2.7.0",
+    "eslint-plugin-jsx-a11y": "^5.1.1",
+    "eslint-plugin-react": "^7.1.0",
+    "mocha": "^3.5.0"
+  }
+}
