@@ -19,8 +19,8 @@ module.exports = function convert(cjsxPath) {
   const jsxPath = `${dirname(cjsxPath)}/${basename(cjsxPath, '.cjsx')}.jsx`;
   const jsSource = decaffeinate.convert(coffeeSource, { preferConst: true }).code;
   const jsxSource = prettier.format(
-    runTransform(createElementTransform, jsSource, jsxPath),
-    { singleQuote: true },
+    runTransform(createElementTransform, jsSource, jsxPath) || jsSource,
+    { singleQuote: true }
   );
 
   const engine = new CLIEngine({ fix: true, cwd: process.cwd() });
