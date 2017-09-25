@@ -5,8 +5,7 @@ const decaffeinate = require('decaffeinate');
 const jscodeshift = require('jscodeshift');
 const createElementTransform = require('react-codemod/transforms/create-element-to-jsx');
 const prettier = require('prettier');
-
-const { CLIEngine } = require(`${process.cwd()}/node_modules/eslint`);
+const CLIEngine = require('./localCLIEngine');
 
 function runTransform(transform, source, path) {
   return transform({ path, source }, { j: jscodeshift, jscodeshift, stats: () => {} }, {});
@@ -23,7 +22,11 @@ module.exports = function convert(cjsxPath) {
     { singleQuote: true }
   );
 
-  const engine = new CLIEngine({ fix: true, cwd: process.cwd() });
-  const report = engine.executeOnText(jsxSource, jsxPath);
-  CLIEngine.outputFixes(report);
+  if (CLIEngine) {
+    const engine = new CLIEngine({ fix: true, cwd: process.cwd() });
+    const report = engine.executeOnText(jsxSource, jsxPath);
+    CLIEngine.outputFixes(report);
+  } else {
+    fs.writeFileSync(jsxPath, jsxSource);
+  }
 };
