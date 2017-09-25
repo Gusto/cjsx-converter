@@ -1,9 +1,3 @@
 module.exports = {
-  extends: 'airbnb',
-  plugins: [
-    'import'
-  ],
-  env: {
-    node: true
-  },
+  extends: '@gusto/eslint-config-gusto',
 };
