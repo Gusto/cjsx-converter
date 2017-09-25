@@ -7,24 +7,40 @@ const exec = util.promisify(require('child_process').exec);
 const unlink = util.promisify(fs.unlink);
 const readFile = util.promisify(fs.readFile);
 
-const itConverts = (expectedFile) => {
-  it('converts CJSX into JSX', async () => {
-    const outPath = './test/fixtures/in.jsx';
-    try {
-      await unlink(outPath);
-    } catch (e) {
-      if (e.code !== 'ENOENT') {
-        throw e;
-      }
+const removeFile = async (path) => {
+  try {
+    await unlink(path);
+  } catch (e) {
+    if (e.code !== 'ENOENT') {
+      throw e;
     }
+  }
+};
 
-    await exec('./bin/cjsx-converter.js ./test/fixtures/in.cjsx');
-    const [output, expected] = await Promise.all(
-      [readFile(outPath, 'utf8'), readFile(`./test/fixtures/${expectedFile}`, 'utf8')],
-    );
+const convertFile = async (inPath, outPath) => {
+  await exec(`./bin/cjsx-converter.js ${inPath}`);
+  return readFile(outPath, 'utf8');
+};
+
+const itConverts = (expectedFile) => {
+  const outPath = './test/fixtures/in.jsx';
+
+  beforeEach(async () => {
+    await removeFile(outPath);
+  });
+
+  afterEach(async () => {
+    await removeFile(outPath);
+  });
+
+  it('converts CJSX into JSX', async () => {
+    const [output, expected] = await Promise.all([
+      convertFile('./test/fixtures/in.cjsx', outPath),
+      readFile(`./test/fixtures/${expectedFile}`, 'utf8'),
+    ]);
 
     expect(output).to.equal(expected);
-  });
+  }).timeout(5000);
 };
 
 describe('cjsx-converter', () => {
