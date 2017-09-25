@@ -10,6 +10,9 @@
     "test": "mocha test/**/*.spec.js",
     "lint": "eslint --ext .jsx,.js ."
   },
+  "bin": {
+    "cjsx-converter": "bin/cjsx-converter.js"
+  },
   "dependencies": {
     "cjsx-codemod": "^0.0.0",
     "commander": "^2.10.0",
