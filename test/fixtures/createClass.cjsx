@@ -1,8 +1,11 @@
 createReactClass = require('create-react-class')
 React = require('react')
 {PageContainer, Alert, Form, LinkButton} = require('components/elements')
+SomeMixin = require('some_mixin')
 
 Done = createReactClass({
+  mixins: [SomeMixin],
+
   render: ->
     <PageContainer>
       <PageContainer.Header>Vermont employee health care summary</PageContainer.Header>

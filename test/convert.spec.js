@@ -1,9 +1,9 @@
 const fs = require('fs');
 const { expect } = require('chai');
-
 const util = require('util');
-const exec = util.promisify(require('child_process').exec);
+const { basename, extname } = require('path');
 
+const exec = util.promisify(require('child_process').exec);
 const unlink = util.promisify(fs.unlink);
 const readFile = util.promisify(fs.readFile);
 
@@ -17,13 +17,15 @@ const removeFile = async (path) => {
   }
 };
 
+const fixture = path => `./test/fixtures/${path}`;
+
 const convertFile = async (inPath, outPath) => {
   await exec(`./bin/cjsx-converter.js ${inPath}`);
   return readFile(outPath, 'utf8');
 };
 
-const itConverts = (expectedFile) => {
-  const outPath = './test/fixtures/in.jsx';
+const itConverts = (inFile, expectedFile) => {
+  const outPath = fixture(`${basename(inFile, extname(inFile))}${extname(expectedFile)}`);
 
   beforeEach(async () => {
     await removeFile(outPath);
@@ -35,8 +37,8 @@ const itConverts = (expectedFile) => {
 
   it('converts CJSX into JSX', async () => {
     const [output, expected] = await Promise.all([
-      convertFile('./test/fixtures/in.cjsx', outPath),
-      readFile(`./test/fixtures/${expectedFile}`, 'utf8'),
+      convertFile(fixture(inFile), outPath),
+      readFile(fixture(expectedFile), 'utf8'),
     ]);
 
     expect(output).to.equal(expected);
@@ -45,7 +47,7 @@ const itConverts = (expectedFile) => {
 
 describe('cjsx-converter', () => {
   context('when the project includes ESLint', () => {
-    itConverts('expected.jsx');
+    itConverts('createClass.cjsx', 'createClass.expected.jsx');
   });
 
   context('when the project does not include ESLint', () => {
@@ -57,6 +59,6 @@ describe('cjsx-converter', () => {
       fs.rename('node_modules/tmp_eslint', 'node_modules/eslint', done);
     });
 
-    itConverts('expected.noESLint.jsx');
+    itConverts('createClass.cjsx', 'createClass.noESLint.expected.jsx');
   });
 });

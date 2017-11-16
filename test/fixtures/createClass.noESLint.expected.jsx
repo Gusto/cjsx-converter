@@ -6,8 +6,11 @@
 import createReactClass from 'create-react-class';
 import React from 'react';
 import { PageContainer, Alert, Form, LinkButton } from 'components/elements';
+import SomeMixin from 'some_mixin';
 
 const Done = createReactClass({
+  mixins: [SomeMixin],
+
   render() {
     return (
       <PageContainer>
