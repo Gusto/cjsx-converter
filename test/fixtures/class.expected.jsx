@@ -3,21 +3,23 @@
  * DS102: Remove unnecessary code created because of implicit returns
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
-import createReactClass from 'create-react-class';
 import React from 'react';
+import PropTypes from 'prop-types';
 import { PageContainer, Alert, Form, LinkButton } from 'components/elements';
-import SomeMixin from 'some_mixin';
 
-const Done = createReactClass({
-  displayName: 'Done',
-  mixins: [SomeMixin],
+class Done extends React.Component {
+  static propTypes = {
+    title: PropTypes.string.isRequired,
+  };
+
+  componentWillMount() {
+    return console.log('about to mount!');
+  }
 
   render() {
     return (
       <PageContainer>
-        <PageContainer.Header>
-          Vermont employee health care summary
-        </PageContainer.Header>
+        <PageContainer.Header>{this.props.title}</PageContainer.Header>
         <PageContainer.Body>
           <PageContainer.FullContentPane>
             <Alert>
@@ -35,7 +37,7 @@ const Done = createReactClass({
         </PageContainer.Body>
       </PageContainer>
     );
-  },
-});
+  }
+}
 
 export default Done;

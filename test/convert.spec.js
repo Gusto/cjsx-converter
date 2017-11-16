@@ -46,19 +46,29 @@ const itConverts = (inFile, expectedFile) => {
 };
 
 describe('cjsx-converter', () => {
-  context('when the project includes ESLint', () => {
-    itConverts('createClass.cjsx', 'createClass.expected.jsx');
+  context('when the file contains an unconvertable createReactClass call', function() {
+    context('when the project includes ESLint', () => {
+      itConverts('createClass.cjsx', 'createClass.expected.jsx');
+    });
+
+    context('when the project does not include ESLint', () => {
+      beforeEach((done) => {
+        fs.rename('node_modules/eslint', 'node_modules/tmp_eslint', done);
+      });
+
+      afterEach((done) => {
+        fs.rename('node_modules/tmp_eslint', 'node_modules/eslint', done);
+      });
+
+      itConverts('createClass.cjsx', 'createClass.noESLint.expected.jsx');
+    });
   });
 
-  context('when the project does not include ESLint', () => {
-    beforeEach((done) => {
-      fs.rename('node_modules/eslint', 'node_modules/tmp_eslint', done);
-    });
+  context('when the file contains a createReactClass call that can be converted to a class', function() {
+    itConverts('class.cjsx', 'class.expected.jsx');
+  });
 
-    afterEach((done) => {
-      fs.rename('node_modules/tmp_eslint', 'node_modules/eslint', done);
-    });
-
-    itConverts('createClass.cjsx', 'createClass.noESLint.expected.jsx');
+  context('when the file contains a createReactClass call that can be converted to a function', function() {
+    itConverts('function.cjsx', 'function.expected.jsx');
   });
 });

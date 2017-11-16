@@ -4,25 +4,38 @@ const cjsxTransform = require('cjsx-codemod/transform');
 const decaffeinate = require('decaffeinate');
 const jscodeshift = require('jscodeshift');
 const createElementTransform = require('react-codemod/transforms/create-element-to-jsx');
+const reactClassTransform = require('./reactClassTransform');
+const pureComponentTransform = require('./pureComponentTransform');
 const prettier = require('prettier');
 const CLIEngine = require('./localCLIEngine');
 
-const runTransform = (transform, source, path) => transform(
+const runCodemod = (transform, options = {}) => (source, path) => transform(
   { path, source },
   { j: jscodeshift, jscodeshift, stats: () => {} },
-  {}
-);
+  options,
+) || source;
 
-const cjsxToCoffee = (source, path) => runTransform(cjsxTransform, source, path);
+const cjsxToCoffee = runCodemod(cjsxTransform);
+
 const coffeeToJs = (source) => decaffeinate.convert(source, {
   useJSModules: true,
   looseJSModules: true,
 }).code;
-const jsToJsx = (source, path) => runTransform(createElementTransform, source, path) || source;
+
+const jsToJsx = runCodemod(createElementTransform);
+
+const convertToClass = runCodemod(reactClassTransform);
+
+const convertToFuncional = runCodemod(pureComponentTransform, {
+  useArrows: true,
+  destructuring: true
+});
+
 const pretty = (source) => prettier.format(source, {
   singleQuote: true,
   trailingComma: 'all',
 });
+
 const lintFix = (source, path) => {
   if (CLIEngine) {
     const engine = new CLIEngine({ fix: true, cwd: process.cwd() });
@@ -40,7 +53,13 @@ module.exports = function convert(cjsxPath) {
   const coffeeSource = cjsxToCoffee(cjsxSource);
   const jsSource = coffeeToJs(coffeeSource);
   const jsxSource = pretty(
-    jsToJsx(jsSource, jsxPath)
+    convertToFuncional(
+      jsToJsx(
+        convertToClass(jsSource, jsxPath),
+        jsxPath,
+      ),
+      jsxPath,
+    )
   );
 
   lintFix(jsxSource, jsxPath);
