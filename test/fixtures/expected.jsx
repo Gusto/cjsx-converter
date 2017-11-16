@@ -31,7 +31,7 @@ const Done = createReactClass({
         </PageContainer.Body>
       </PageContainer>
     );
-  }
+  },
 });
 
 export default Done;

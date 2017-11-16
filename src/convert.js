@@ -19,7 +19,10 @@ const coffeeToJs = (source) => decaffeinate.convert(source, {
   looseJSModules: true,
 }).code;
 const jsToJsx = (source, path) => runTransform(createElementTransform, source, path) || source;
-const pretty = (source) => prettier.format(source, { singleQuote: true });
+const pretty = (source) => prettier.format(source, {
+  singleQuote: true,
+  trailingComma: 'all',
+});
 const lintFix = (source, path) => {
   if (CLIEngine) {
     const engine = new CLIEngine({ fix: true, cwd: process.cwd() });
