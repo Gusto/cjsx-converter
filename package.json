@@ -16,7 +16,7 @@
   "dependencies": {
     "cjsx-codemod": "^0.0.0",
     "commander": "^2.10.0",
-    "decaffeinate": "^2.56.32",
+    "decaffeinate": "^3.0.0",
     "jscodeshift": "^0.3.32",
     "prettier": "^1.5.3",
     "react-codemod": "^4.0.0"

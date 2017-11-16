@@ -1,3 +1,8 @@
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
 import createReactClass from 'create-react-class';
 import React from 'react';
 import { PageContainer, Alert, Form, LinkButton } from 'components/elements';
