@@ -9,34 +9,51 @@ const pureComponentTransform = require('./pureComponentTransform');
 const prettier = require('prettier');
 const CLIEngine = require('./localCLIEngine');
 
-const runCodemod = (transform, options = {}) => (source, path) => transform(
-  { path, source },
-  { j: jscodeshift, jscodeshift, stats: () => {} },
-  options,
-) || source;
+const runCodemod = (codemod, options = {}) => ({ source, path }) => ({
+  source: codemod(
+    { path, source },
+    { j: jscodeshift, jscodeshift, stats: () => {} },
+    options,
+  ) || source,
+  path,
+});
+
+const runTransform = transform => ({ source, path }) => ({
+  source: transform(source),
+  path,
+});
 
 const cjsxToCoffee = runCodemod(cjsxTransform);
 
-const coffeeToJs = (source) => decaffeinate.convert(source, {
-  useJSModules: true,
-  looseJSModules: true,
-}).code;
+const coffeeToJs = runTransform(source =>
+  decaffeinate.convert(source, {
+    useJSModules: true,
+    looseJSModules: true,
+  }).code
+);
 
-const jsToJsx = runCodemod(createElementTransform);
+const convertToCreateElement = runCodemod(createElementTransform);
+
+const jsToJsx = ({ source, path }) => ({
+  source: convertToCreateElement({ source, path }).source,
+  path: `${dirname(path)}/${basename(path, '.cjsx')}.jsx`,
+});
 
 const convertToClass = runCodemod(reactClassTransform);
 
-const convertToFuncional = runCodemod(pureComponentTransform, {
+const convertToFunctional = runCodemod(pureComponentTransform, {
   useArrows: true,
   destructuring: true
 });
 
-const pretty = (source) => prettier.format(source, {
-  singleQuote: true,
-  trailingComma: 'all',
-});
+const prettify = runTransform(source =>
+  prettier.format(source, {
+    singleQuote: true,
+    trailingComma: 'all',
+  })
+);
 
-const lintFix = (source, path) => {
+const lintFix = ({ source, path }) => {
   if (CLIEngine) {
     const engine = new CLIEngine({ fix: true, cwd: process.cwd() });
     const report = engine.executeOnText(source, path);
@@ -46,21 +63,23 @@ const lintFix = (source, path) => {
   }
 };
 
-module.exports = function convert(cjsxPath) {
-  const jsxPath = `${dirname(cjsxPath)}/${basename(cjsxPath, '.cjsx')}.jsx`;
-  const cjsxSource = fs.readFileSync(cjsxPath, 'utf8');
-
-  const coffeeSource = cjsxToCoffee(cjsxSource);
-  const jsSource = coffeeToJs(coffeeSource);
-  const jsxSource = pretty(
-    convertToFuncional(
-      jsToJsx(
-        convertToClass(jsSource, jsxPath),
-        jsxPath,
-      ),
-      jsxPath,
-    )
+const runSteps = (...fns) =>
+  fns.reduce((prevFn, nextFn) =>
+    value => nextFn(prevFn(value)),
+    value => value
   );
 
-  lintFix(jsxSource, jsxPath);
+module.exports = function convert(cjsxPath) {
+  runSteps(
+    cjsxToCoffee,
+    coffeeToJs,
+    jsToJsx,
+    convertToClass,
+    convertToFunctional,
+    prettify,
+    lintFix,
+  )({
+    source: fs.readFileSync(cjsxPath, 'utf8'),
+    path: cjsxPath,
+  });
 };
