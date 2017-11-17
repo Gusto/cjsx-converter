@@ -49,7 +49,7 @@ const jsToJsx = ({ source, path }) => {
   };
 };
 
-const convertToClass = runCodemod(reactClassTransform);
+const convertToClass = runCodemod(reactClassTransform, { 'pure-component': true });
 
 const convertToFunctional = runCodemod(pureComponentTransform, {
   useArrows: true,
