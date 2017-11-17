@@ -1,5 +1,7 @@
 const fs = require('fs');
-const { dirname, basename } = require('path');
+const util = require('util');
+const { dirname, basename, extname } = require('path');
+const assert = require('assert');
 const cjsxTransform = require('cjsx-codemod/transform');
 const decaffeinate = require('decaffeinate');
 const jscodeshift = require('jscodeshift');
@@ -9,12 +11,15 @@ const pureComponentTransform = require('./pureComponentTransform');
 const prettier = require('prettier');
 const CLIEngine = require('./localCLIEngine');
 
-const runCodemod = (codemod, options = {}) => ({ source, path }) => ({
+const readFile = util.promisify(fs.readFile);
+const writeFile = util.promisify(fs.writeFile);
+
+const runCodemod = (codemod, options = {}, nullIfUnchanged = false) => ({ source, path }) => ({
   source: codemod(
     { path, source },
     { j: jscodeshift, jscodeshift, stats: () => {} },
     options,
-  ) || source,
+  ) || (!nullIfUnchanged && source),
   path,
 });
 
@@ -32,12 +37,17 @@ const coffeeToJs = runTransform(source =>
   }).code
 );
 
-const convertToCreateElement = runCodemod(createElementTransform);
+const convertToCreateElement = runCodemod(createElementTransform, {}, true);
 
-const jsToJsx = ({ source, path }) => ({
-  source: convertToCreateElement({ source, path }).source,
-  path: `${dirname(path)}/${basename(path, '.cjsx')}.jsx`,
-});
+const jsToJsx = ({ source, path }) => {
+  const jsxSource = convertToCreateElement({ source, path }).source;
+  const ext = jsxSource ? 'jsx' : 'js';
+
+  return {
+    source: jsxSource || source,
+    path: `${dirname(path)}/${basename(path, extname(path))}.${ext}`,
+  };
+};
 
 const convertToClass = runCodemod(reactClassTransform);
 
@@ -56,11 +66,12 @@ const prettify = runTransform(source =>
 const lintFix = ({ source, path }) => {
   if (CLIEngine) {
     const engine = new CLIEngine({ fix: true, cwd: process.cwd() });
-    const report = engine.executeOnText(source, path);
-    CLIEngine.outputFixes(report);
-  } else {
-    fs.writeFileSync(path, source);
+    const { results } = engine.executeOnText(source, path);
+    assert(results.length === 1, 'Unexpected ESLint results');
+    source = results[0].output || source;
   }
+
+  return { source, path };
 };
 
 const runSteps = (...fns) =>
@@ -69,17 +80,21 @@ const runSteps = (...fns) =>
     value => value
   );
 
-module.exports = function convert(cjsxPath) {
-  runSteps(
-    cjsxToCoffee,
-    coffeeToJs,
-    jsToJsx,
-    convertToClass,
-    convertToFunctional,
-    prettify,
-    lintFix,
-  )({
-    source: fs.readFileSync(cjsxPath, 'utf8'),
-    path: cjsxPath,
+const convert = runSteps(
+  cjsxToCoffee,
+  coffeeToJs,
+  jsToJsx,
+  convertToClass,
+  convertToFunctional,
+  prettify,
+  lintFix,
+);
+
+module.exports = async function convertFile(coffeePath) {
+  const { source, path } = convert({
+    source: await readFile(coffeePath, 'utf8'),
+    path: coffeePath,
   });
+
+  await writeFile(path, source);
 };

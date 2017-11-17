@@ -1,2 +1,2 @@
-test/fixtures/*expected.jsx
+test/fixtures/*expected.js*
 src/pureComponentTransform.js

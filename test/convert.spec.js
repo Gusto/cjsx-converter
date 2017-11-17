@@ -35,7 +35,7 @@ const itConverts = (inFile, expectedFile) => {
     await removeFile(outPath);
   });
 
-  it('converts CJSX into JSX', async () => {
+  it('converts successfully', async () => {
     const [output, expected] = await Promise.all([
       convertFile(fixture(inFile), outPath),
       readFile(fixture(expectedFile), 'utf8'),
@@ -70,5 +70,9 @@ describe('cjsx-converter', () => {
 
   context('when the file contains a createReactClass call that can be converted to a function', function() {
     itConverts('function.cjsx', 'function.expected.jsx');
+  });
+
+  context('when the file contains no CJSX', function() {
+    itConverts('plainCoffee.coffee', 'plainCoffee.expected.js');
   });
 });
