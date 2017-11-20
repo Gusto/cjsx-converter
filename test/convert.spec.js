@@ -72,6 +72,8 @@ describe('cjsx-converter', () => {
 
   context('when the file contains a createReactClass call that can be converted to a function', function() {
     itConverts('function.cjsx', 'function.expected.jsx');
+
+    itConverts('templateLiteral.cjsx', 'templateLiteral.expected.jsx');
   });
 
   context('when the file contains no CJSX', function() {

@@ -6,6 +6,7 @@ const cjsxTransform = require('cjsx-codemod/transform');
 const decaffeinate = require('decaffeinate');
 const jscodeshift = require('jscodeshift');
 const createElementTransform = require('react-codemod/transforms/create-element-to-jsx');
+const fixTemplateLiteralTransform = require('./fixTemplateLiteralTransform');
 const reactClassTransform = require('./reactClassTransform');
 const pureComponentTransform = require('./pureComponentTransform');
 const prettier = require('prettier');
@@ -49,6 +50,8 @@ const jsToJsx = ({ source, path }) => {
   };
 };
 
+const fixTemplateLiteral = runCodemod(fixTemplateLiteralTransform);
+
 const convertToClass = runCodemod(reactClassTransform, { 'pure-component': true });
 
 const convertToFunctional = runCodemod(pureComponentTransform, {
@@ -84,6 +87,7 @@ const convert = runSteps(
   cjsxToCoffee,
   coffeeToJs,
   jsToJsx,
+  fixTemplateLiteral,
   convertToClass,
   convertToFunctional,
   prettify,
