@@ -70,8 +70,9 @@ const lintFix = ({ source, path }) => {
   if (CLIEngine) {
     const engine = new CLIEngine({ fix: true, cwd: process.cwd() });
     const { results } = engine.executeOnText(source, path);
-    assert(results.length === 1, 'Unexpected ESLint results');
-    source = results[0].output || source;
+    if (results.length === 1) {
+      source = results[0].output || source;
+    }
   }
 
   return { source, path };
