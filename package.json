@@ -1,6 +1,6 @@
 {
   "name": "cjsx-converter",
-  "version": "0.2.2",
+  "version": "1.0.0",
   "description": "Convert Coffee/CJSX into pretty JS/JSX",
   "main": "index.js",
   "repository": "https://github.com/Gusto/cjsx-converter.git",

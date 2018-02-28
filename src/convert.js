@@ -1,7 +1,6 @@
 const fs = require('fs');
 const util = require('util');
 const { dirname, basename, extname } = require('path');
-const assert = require('assert');
 const cjsxTransform = require('cjsx-codemod/transform');
 const decaffeinate = require('decaffeinate');
 const jscodeshift = require('jscodeshift');
