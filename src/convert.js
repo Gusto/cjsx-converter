@@ -80,7 +80,7 @@ const lintFix = ({ source, path }) => {
 const runSteps = (...fns) =>
   fns.reduce((prevFn, nextFn) =>
     value => nextFn(prevFn(value)),
-    value => value
+  value => value
   );
 
 const convert = runSteps(
@@ -95,10 +95,15 @@ const convert = runSteps(
 );
 
 module.exports = async function convertFile(coffeePath) {
-  const { source, path } = convert({
-    source: await readFile(coffeePath, 'utf8'),
-    path: coffeePath,
-  });
+  try {
+    const { source, path } = convert({
+      source: await readFile(coffeePath, 'utf8'),
+      path: coffeePath,
+    });
 
-  await writeFile(path, source);
+    await writeFile(path, source);
+  } catch (e) {
+    console.error(e);
+    process.exit(1);
+  }
 };

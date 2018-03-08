@@ -1,4 +1,4 @@
-module.exports = function(file, api) {
+module.exports = function fixTemplateLiteralTransform(file, api) {
   const j = api.jscodeshift;
 
   const replaced = j(file.source)
@@ -6,11 +6,14 @@ module.exports = function(file, api) {
       expression: {
         type: 'TemplateLiteral',
         expressions: [],
-        quasis: [{
-          type: 'TemplateElement'
-        }]
-      }
+        quasis: [
+          {
+            type: 'TemplateElement',
+          },
+        ],
+      },
     })
+    .filter(p => p.parent.node.type === 'JSXElement')
     .replaceWith(p => {
       const siblings = p.parent.node.children;
       let textVal = p.node.expression.quasis[0].value.cooked;
@@ -27,4 +30,6 @@ module.exports = function(file, api) {
   if (replaced.length > 0) {
     return replaced.toSource();
   }
+
+  return null;
 };
