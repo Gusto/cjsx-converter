@@ -16,14 +16,13 @@
   "dependencies": {
     "cjsx-codemod": "^0.0.0",
     "commander": "^2.10.0",
-    "decaffeinate": "^4.0.1",
+    "decaffeinate": "^5.1.12",
     "jscodeshift": "^0.6.4",
     "prettier": "^1.11.0",
     "react-codemod": "^4.0.0"
   },
   "devDependencies": {
     "@gusto/eslint-config-gusto": "^7.0.0",
-    "babel-eslint": "^7.2",
     "chai": "^4.1.1",
     "eslint": "^3.19.0",
     "eslint-config-airbnb": "^15.1.0",
