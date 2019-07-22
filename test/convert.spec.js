@@ -47,7 +47,7 @@ const itConverts = (inFile, expectedFile) => {
 };
 
 describe('cjsx-converter', () => {
-  context('when the file contains an unconvertable createReactClass call', () => {
+  context('when the file contains an unconvertible createReactClass call', () => {
     context('when the project includes ESLint', () => {
       itConverts('createClass.cjsx', 'createClass.expected.jsx');
     });

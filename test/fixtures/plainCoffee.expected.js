@@ -10,12 +10,7 @@ import { formatDate } from 'helpers';
 
 class EmployeeAnniversary extends BaseZenModel {
   static initClass() {
-    this.prototype.computedAttributes = [
-      'shortDate',
-      'longDate',
-      'href',
-      'isToday',
-    ];
+    this.prototype.computedAttributes = ['shortDate', 'longDate', 'href', 'isToday'];
   }
 
   shortDate() {
