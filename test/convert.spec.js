@@ -4,10 +4,11 @@ const util = require('util');
 const { basename, extname } = require('path');
 
 const exec = util.promisify(require('child_process').exec);
+
 const unlink = util.promisify(fs.unlink);
 const readFile = util.promisify(fs.readFile);
 
-const removeFile = async (path) => {
+const removeFile = async path => {
   try {
     await unlink(path);
   } catch (e) {
@@ -46,17 +47,17 @@ const itConverts = (inFile, expectedFile) => {
 };
 
 describe('cjsx-converter', () => {
-  context('when the file contains an unconvertable createReactClass call', function() {
+  context('when the file contains an unconvertible createReactClass call', () => {
     context('when the project includes ESLint', () => {
       itConverts('createClass.cjsx', 'createClass.expected.jsx');
     });
 
     context('when the project does not include ESLint', () => {
-      beforeEach((done) => {
+      beforeEach(done => {
         fs.rename('node_modules/eslint', 'node_modules/tmp_eslint', done);
       });
 
-      afterEach((done) => {
+      afterEach(done => {
         fs.rename('node_modules/tmp_eslint', 'node_modules/eslint', done);
       });
 
@@ -64,19 +65,22 @@ describe('cjsx-converter', () => {
     });
   });
 
-  context('when the file contains a createReactClass call that can be converted to a class', function() {
+  context('when the file contains a createReactClass call that can be converted to a class', () => {
     itConverts('class.cjsx', 'class.expected.jsx');
 
     itConverts('pureRenderMixin.cjsx', 'pureRenderMixin.expected.jsx');
   });
 
-  context('when the file contains a createReactClass call that can be converted to a function', function() {
-    itConverts('function.cjsx', 'function.expected.jsx');
+  context(
+    'when the file contains a createReactClass call that can be converted to a function',
+    () => {
+      itConverts('function.cjsx', 'function.expected.jsx');
 
-    itConverts('templateLiteral.cjsx', 'templateLiteral.expected.jsx');
-  });
+      itConverts('templateLiteral.cjsx', 'templateLiteral.expected.jsx');
+    },
+  );
 
-  context('when the file contains no CJSX', function() {
+  context('when the file contains no CJSX', () => {
     itConverts('plainCoffee.coffee', 'plainCoffee.expected.js');
   });
 });

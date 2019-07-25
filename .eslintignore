@@ -1,2 +1,4 @@
 test/fixtures/*expected.js*
 src/pureComponentTransform.js
+src/utils/ReactUtils.js
+src/reactClassTransform.js

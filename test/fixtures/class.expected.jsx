@@ -23,13 +23,10 @@ class Done extends React.Component {
         <PageContainer.Body>
           <PageContainer.FullContentPane>
             <Alert>
-              <p>
-                All Done! We'll take care of your Vermont Health Care
-                Contribution from here.
-              </p>
+              <p>All Done! We'll take care of your Vermont Health Care Contribution from here.</p>
             </Alert>
-            <Form.Actions className='text-center' alignForm={false}>
-              <LinkButton href='/' icon='arrow-back' className='btn-primary'>
+            <Form.Actions className="text-center" alignForm={false}>
+              <LinkButton href="/" icon="arrow-back" className="btn-primary">
                 Return to Dashboard
               </LinkButton>
             </Form.Actions>

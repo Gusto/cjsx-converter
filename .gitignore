@@ -12,3 +12,5 @@ node_modules/
 .eslintcache
 
 test/fixtures/in.jsx
+.history
+.idea

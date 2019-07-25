@@ -1,7 +1,8 @@
 module.exports = {
-  extends: '@gusto/eslint-config-gusto',
+  extends: 'gusto',
   rules: {
     'no-prototype-builtins': 'off',
     'no-console': 'off',
+    'arrow-body-style': ['error', 'as-needed'],
   },
 };
