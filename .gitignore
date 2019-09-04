@@ -15,5 +15,5 @@ test/fixtures/in.jsx
 /.history
 /.idea
 
- # built CircleCI configs
+# built CircleCI configs
 .circleci/processed-config.yml
