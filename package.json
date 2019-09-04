@@ -7,6 +7,7 @@
   "author": "Rylan Collins <rylan@gusto.com>",
   "license": "MIT",
   "scripts": {
+    "circle:execute": "circleci config process ./.circleci/config.yml > .circleci/processed-config.yml && circleci local execute -c .circleci/processed-config.yml --job",
     "test": "mocha test/**/*.spec.js",
     "lint": "eslint --ext .jsx,.js ."
   },
